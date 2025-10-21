@@ -1,0 +1,4 @@
+
+username: zomato
+Pass: zomatoarbaz
+connection string: mongodb+srv://zomato:<db_password>@cluster0.m3yuhoc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
