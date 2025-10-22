@@ -1,9 +1,8 @@
-const mongoos = require("mongoose");
 const mongoose = require("mongoose");
 
 //connect to db
 function connectDB() {
-    mongoos.connect("mongodb+srv://zomato:zomatoarbaz@cluster0.m3yuhoc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    mongoose.connect(process.env.MONGODB_URI)
     .then(() => {
         console.log("Mongodb connected successfully");
     })

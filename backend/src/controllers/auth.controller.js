@@ -28,7 +28,7 @@ async function registerUser(req, res) {
     //jsonWebToken
     const token = jwt.sign({
         id: user._id,
-    }, "81300e41de5ed065ffce3f1abae380be8ebe307b");
+    }, process.env.JWT_SECRET);
 
     res.cookie("token", token);  //saving into cookie
     
@@ -67,7 +67,7 @@ async function loginUser(req, res) {
     //token
     const token = jwt.sign({
         id: user._id
-    }, "81300e41de5ed065ffce3f1abae380be8ebe307b");
+    }, process.env.JWT_SECRET);
 
     //saving token in cookie
     res.cookie("token", token);
