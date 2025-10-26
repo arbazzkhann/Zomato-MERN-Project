@@ -1,5 +1,5 @@
 const UserModel = require("../models/user.model");
-const FoodPartnerModel = require("../models/foodParter.model");
+const FoodPartnerModel = require("../models/foodPartner.model");
 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -89,9 +89,16 @@ async function loginUser(req, res) {
 
 //user-logout
 function logoutUser(req, res) {
-    res.clearCookie("token");
+    if(!req.cookies.token) {
+        return res.status(400).json({
+            message: "User not logged in yet!"
+        })
+    }
+
+    res.clearCookie("token")
+
     res.status(200).json({
-        message: "User logged out successfully"
+        message: "User logged out successfully!"
     });
 }
 
@@ -171,9 +178,16 @@ async function loginFoodPartner(req, res) {
 }
 
 function logoutFoodPartner(req, res) {
-    res.clearCookie("token");
-    res.status(400).json({
-        message: "User logged out successfully"
+    if(!req.cookies.token) {
+        return res.status(400).json({
+            message: "User not logged in yet!"
+        })
+    }
+
+    res.clearCookie("token")
+
+    res.status(200).json({
+        message: "User logged out successfully!"
     });
 }
 
