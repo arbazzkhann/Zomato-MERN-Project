@@ -1,16 +1,17 @@
+require('dotenv').config();
 const ImageKit = require("imagekit");
 
 const imagekit = new ImageKit({
-    publicKey: process.env.PUBLIC_KEY,
-    privateKey: process.env.PRIVATE_KEY,
-    urlEndPoint: process.env.URL_ENDPOINT
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
 });
 
 async function uploadFile(file, fileName) {
-    const result = await imagekit.uplaod({
+    const result = await imagekit.upload({
         file, //required
         fileName // required
-    })
+    });
     return result;
 }
 
