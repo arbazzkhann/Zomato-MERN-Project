@@ -14,6 +14,6 @@ const foodSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "FoodPartnerModel"
     }
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model("FoodModel", foodSchema);

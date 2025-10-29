@@ -13,6 +13,6 @@ const footParternerSchema = mongoose.Schema({
     password: {
         type: String
     }
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model("FoodPartnerModel", footParternerSchema);

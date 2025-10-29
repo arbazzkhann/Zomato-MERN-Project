@@ -5,8 +5,8 @@ const {connectDB} = require("./src/db/db.js");
 //.env
 require("dotenv").config();
 
+//connecting to DB
 connectDB();
-
 
 const PORT = 3000;
 app.listen(PORT, () => {
