@@ -7,14 +7,26 @@ const upload = multer({
 
 const router = express.Router();
 
-const { authFoodPartnerMiddleware } = require("../middlewares/auth.middlewares")
+const authMiddleware = require("../middlewares/auth.middlewares")
 
-const { createFood,  } = require("../controllers/food.controller");
+const foodController = require("../controllers/food.controller");
 
 
 
 /* POST /api/food/ [protected] */
-router.post("/", authFoodPartnerMiddleware, upload.single("video"),createFood)
+router.post("/", 
+    authMiddleware.authFoodPartnerMiddleware, 
+    upload.single("video"),
+    foodController.createFoodItem
+);
+
+router.get("/", 
+    authMiddleware.authUserMiddleware, 
+    upload.single("video"),
+    foodController.getFoodItems
+);
+
+
 
 
 module.exports = router;
