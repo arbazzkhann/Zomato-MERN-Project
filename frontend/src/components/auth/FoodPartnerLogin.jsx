@@ -12,6 +12,7 @@ const PartnerLogin = () => {
             <input
               type="email"
               id="email"
+              name="email"
               className="form-input"
               placeholder="Enter your email"
               required
@@ -22,6 +23,7 @@ const PartnerLogin = () => {
             <input
               type="password"
               id="password"
+              name="password"
               className="form-input"
               placeholder="Enter your password"
               required
