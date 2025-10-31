@@ -6,13 +6,16 @@ const jwt = require("jsonwebtoken");
 
 //user-register
 async function registerUser(req, res) {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, phoneNumber, password } = req.body;
 
-    const isUserAlreadyExists = await UserModel.findOne({
+    const isUserEmailExists = await UserModel.findOne({
         email
     });
+    const isUserPhoneNumberExists = await UserModel.findOne({
+        phoneNumber
+    });
 
-    if(isUserAlreadyExists) {
+    if(isUserEmailExists || isUserPhoneNumberExists) {
         return res.status(400).json({
             message: "User already exists"
         });
@@ -24,6 +27,7 @@ async function registerUser(req, res) {
     //creating user
     const user = await UserModel.create({
         fullName,
+        phoneNumber,
         email,
         password: hashedPassword
     });
@@ -40,8 +44,9 @@ async function registerUser(req, res) {
         message: "User registered successfully",
         user: {
             _id: user._id,
+            fullName: user.fullName,
             email: user.email,
-            fullName: user.fullName
+            phoneNumber: user.phoneNumber
         }
     });
 }
@@ -104,13 +109,16 @@ function logoutUser(req, res) {
 
 //foodParter-register
 async function registerFoodParter(req, res) {
-    const { fullName, email, password } = req.body;
+    const { ownerName, restaurantName, phoneNumber, email, password, address } = req.body;
 
-    const isFoodParterExists = await FoodPartnerModel.findOne({
+    const isFoodParterEmailExists = await FoodPartnerModel.findOne({
         email
     });
+    const isFoodParterPhoneNumberExists = await FoodPartnerModel.findOne({
+        phoneNumber
+    });
 
-    if(isFoodParterExists) {
+    if(isFoodParterEmailExists || isFoodParterPhoneNumberExists) {
         return res.status(400).json({
             message: "Food parter already exists"
         });
@@ -119,9 +127,12 @@ async function registerFoodParter(req, res) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const foodParter = await FoodPartnerModel.create({
-        fullName,
+        ownerName,
+        restaurantName,
+        phoneNumber,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        address
     });
 
     const token = jwt.sign({
@@ -134,12 +145,16 @@ async function registerFoodParter(req, res) {
         message: "Foot parter created successfully",
         foodParter: {
             id: foodParter._id,
+            ownerName: foodParter.ownerName,
+            restaurantName: foodParter.restaurantName,
+            phoneNumber: foodParter.phoneNumber,
             email: foodParter.email,
-            fullName: foodParter.fullName
+            address: foodParter.address
         }
     });
 }
 
+//foodParter-login
 async function loginFoodPartner(req, res) {
     const { email, password } = req.body;
 
@@ -177,6 +192,7 @@ async function loginFoodPartner(req, res) {
     })
 }
 
+//foodParter-logout
 function logoutFoodPartner(req, res) {
     if(!req.cookies.token) {
         return res.status(400).json({
