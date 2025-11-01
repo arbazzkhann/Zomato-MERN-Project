@@ -1,12 +1,37 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
+import axios from 'axios';
 
 const PartnerLogin = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    const response = await axios.post("http://localhost:3000/api/auth/food-partner/login", 
+      {
+        email,
+        password
+      },
+      {
+        withCredentials: true
+      }
+    );
+
+    console.log(response);
+
+    navigate("/");
+
+  }
+
   return (
     <div className="auth-container">
       <div className="auth-form">
         <h2 className="auth-title">Food Partner Login</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email" className="form-label">Email</label>
             <input
