@@ -23,7 +23,7 @@ const PartnerLogin = () => {
 
     console.log(response);
 
-    navigate("/");
+    navigate("/create-food");
 
   }
 
