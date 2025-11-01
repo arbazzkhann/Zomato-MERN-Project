@@ -1,12 +1,45 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
+import axios from 'axios';
 
 const FoodPartnerRegister = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const ownerName = e.target.ownerName.value;
+    const restaurantName = e.target.restaurantName.value;
+    const phoneNumber = e.target.phoneNumber.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const address = e.target.address.value;
+
+    const response = await axios.post("http://localhost:3000/api/auth/food-partner/register", 
+      {
+        ownerName,
+        restaurantName,
+        phoneNumber,
+        email,
+        password,
+        address
+      },
+      {
+        withCredentials: true
+      }
+    );
+
+    console.log(response);
+
+    navigate("/");
+  }
+
+
   return (
     <div className="auth-container">
       <div className="auth-form">
         <h2 className="auth-title">Food Partner Registration</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="ownerName" className="form-label">Owner Name</label>
             <input
