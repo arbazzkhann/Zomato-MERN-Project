@@ -1,6 +1,7 @@
 const FoodModel = require("../models/food.model");
 const storageService = require("../services/storage.service");
 const { v4: uuid } = require("uuid");
+const path = require("path");
 
 async function createFoodItem(req, res) {
     const foodPartner = req.foodPartner;
@@ -9,7 +10,11 @@ async function createFoodItem(req, res) {
     console.log("req.body: ", req.body);
     console.log("req.file: ", req.file);    
 
-    const fileUploadResult = await storageService.uploadFile(req.file.buffer, uuid());
+    // Extract file extension from original filename
+    const fileExtension = path.extname(req.file.originalname);
+    const fileName = uuid() + fileExtension;
+
+    const fileUploadResult = await storageService.uploadFile(req.file.buffer, fileName);
 
     console.log(fileUploadResult);
 
