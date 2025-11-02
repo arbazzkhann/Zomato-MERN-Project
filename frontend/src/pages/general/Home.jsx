@@ -1,37 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react'
-import './Home.css'
+import React, { useState, useRef, useEffect } from 'react';
+import './Home.css';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Home = () => {
-  const containerRef = useRef(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [ videos, setVideos ] = useState([]);
+  const containerRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Sample video data - replace with your actual data
-  const videos = [
-    {
-      id: 1,
-      videoUrl: 'https://ik.imagekit.io/arbazfanda3/da2ba73c-f64b-4251-a4c0-f5646a874710_I6sfXRWOW.mp4',
-      description: 'Delicious Italian pasta with creamy sauce and fresh herbs. Perfect for a cozy dinner!',
-      storeName: 'Italian Bistro'
-    },
-    {
-      id: 2,
-      videoUrl: 'https://ik.imagekit.io/arbazfanda3/da2ba73c-f64b-4251-a4c0-f5646a874710_I6sfXRWOW.mp4',
-      description: 'Authentic Mexican tacos with fresh ingredients and spicy salsa. A taste of Mexico!',
-      storeName: 'El Taco Loco'
-    },
-    {
-      id: 3,
-      videoUrl: 'https://ik.imagekit.io/arbazfanda3/da2ba73c-f64b-4251-a4c0-f5646a874710_I6sfXRWOW.mp4',
-      description: 'Crispy golden fried chicken with special herbs and spices. Finger-licking good!',
-      storeName: 'Chicken Paradise'
-    },
-    {
-      id: 4,
-      videoUrl: 'https://ik.imagekit.io/arbazfanda3/da2ba73c-f64b-4251-a4c0-f5646a874710_I6sfXRWOW.mp4',
-      description: 'Fresh sushi rolls with premium fish and expertly prepared rice. A Japanese delight!',
-      storeName: 'Sushi Masters'
-    }
-  ]
 
   // Track current video index
   useEffect(() => {
@@ -50,7 +26,15 @@ const Home = () => {
     return () => {
       container.removeEventListener('scroll', handleScroll)
     }
-  }, [])
+  }, [videos])
+
+  useEffect(() => {
+    axios.get("http://localhost:3000/api/food", {withCredentials: true})
+    .then(response => {
+      // console.log("response.data: ", response.data.foodItems)
+      setVideos(response.data.foodItems);
+    })
+  })
 
   // Truncate description to max 2 lines
   const truncateDescription = (text, maxLines = 2) => {
@@ -78,14 +62,15 @@ const Home = () => {
   return (
     <div className="home-container">
       <div className="video-feed" ref={containerRef}>
-        {videos.map((video, index) => (
-          <div key={video.id} className="video-wrapper">
+        {videos.map(video => (
+          <div key={video._id} className="video-wrapper">
             <video
-              src={video.videoUrl}
+              src={video.video}
               autoPlay
               muted
               loop
               playsInline
+              preload='metadata'
               className="video"
             />
             
@@ -96,7 +81,7 @@ const Home = () => {
                   {truncateDescription(video.description)}
                 </p>
                 <button className="visit-store-btn">
-                  Visit Store
+                  <Link to={`/food-partner/${video.foodPartner}`}>Visit Store</Link>
                 </button>
               </div>
             </div>
