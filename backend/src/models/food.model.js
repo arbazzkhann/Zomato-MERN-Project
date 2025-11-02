@@ -10,7 +10,7 @@ const foodSchema = mongoose.Schema({
         required: true
     },
     description: String,
-    foodParter: {
+    foodPartner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "FoodPartnerModel"
     }
