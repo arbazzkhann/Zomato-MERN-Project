@@ -4,92 +4,144 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Home = () => {
-  const [ videos, setVideos ] = useState([]);
+  const [videos, setVideos] = useState([]);
   const containerRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-
-  // Track current video index
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    const handleScroll = () => {
-      const scrollTop = container.scrollTop
-      const containerHeight = container.clientHeight
-      const index = Math.round(scrollTop / containerHeight)
-      setCurrentIndex(index)
-    }
-
-    container.addEventListener('scroll', handleScroll, { passive: true })
-    
-    return () => {
-      container.removeEventListener('scroll', handleScroll)
-    }
-  }, [videos])
+  const videoRefs = useRef([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/food", {withCredentials: true})
-    .then(response => {
-      // console.log("response.data: ", response.data.foodItems)
-      setVideos(response.data.foodItems);
-    })
-  })
+    axios
+      .get('http://localhost:3000/api/food', { withCredentials: true })
+      .then((res) => setVideos(res.data?.foodItems || []))
+      .catch((err) => console.error('Error fetching videos:', err));
+  }, []);
 
-  // Truncate description to max 2 lines
-  const truncateDescription = (text, maxLines = 2) => {
-    const words = text.split(' ')
-    let truncated = ''
-    const testDiv = document.createElement('div')
-    testDiv.style.cssText = 'position: absolute; visibility: hidden; width: 90%; padding: 0 20px; font-size: 14px; line-height: 1.4;'
-    testDiv.innerHTML = truncated
-    document.body.appendChild(testDiv)
-    
-    for (let word of words) {
-      const prevText = truncated
-      truncated += (truncated ? ' ' : '') + word
-      testDiv.textContent = truncated
-      
-      if (testDiv.scrollHeight > maxLines * (14 * 1.4)) {
-        document.body.removeChild(testDiv)
-        return prevText + '...'
-      }
-    }
-    document.body.removeChild(testDiv)
-    return truncated
-  }
+  // Autoplay/pause the video that’s in view (desktop & mobile)
+  useEffect(() => {
+    const root = containerRef.current;
+    if (!root || !videos.length) return;
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const idx = Number(entry.target.getAttribute('data-index'));
+          const vid = videoRefs.current[idx];
+          if (!vid) return;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            vid.play().catch(() => {});
+          } else {
+            vid.pause();
+          }
+        });
+      },
+      { root, threshold: [0.6] }
+    );
+
+    const pages = root.querySelectorAll('.video-page');
+    pages.forEach((el) => obs.observe(el));
+
+    return () => obs.disconnect();
+  }, [videos]);
+
+  const truncateDescription = (text, max = 120) =>
+    typeof text === 'string' && text.length > max ? text.slice(0, max - 1) + '…' : text || '';
+
+  // ---- Desktop button helpers (safe) ----
+  const getIndex = () => {
+    const el = containerRef.current;
+    if (!el) return 0;
+    const h = Math.max(el.clientHeight, 1);
+    return Math.round(el.scrollTop / h);
+  };
+
+  const scrollToIndex = (idx) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const clamped = Math.max(0, Math.min(idx, videos.length - 1));
+    const top = clamped * el.clientHeight;
+    el.scrollTo({ top, behavior: 'smooth' });
+  };
+
+  const goPrev = () => scrollToIndex(getIndex() - 1);
+  const goNext = () => scrollToIndex(getIndex() + 1);
+
+
+  console.log(videos)
+  // ---------------------------------------
 
   return (
     <div className="home-container">
+      {/* Feed */}
       <div className="video-feed" ref={containerRef}>
-        {videos.map(video => (
-          <div key={video._id} className="video-wrapper">
-            <video
-              src={video.video}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload='metadata'
-              className="video"
-            />
-            
-            {/* Overlay with description and button */}
-            <div className="video-overlay">
-              <div className="video-info">
-                <p className="video-description">
-                  {truncateDescription(video.description)}
-                </p>
-                <button className="visit-store-btn">
-                  <Link to={`/food-partner/${video.foodPartner}`}>Visit Store</Link>
-                </button>
+        {videos.length === 0 && (
+          <div className="empty-state">No videos available.</div>
+        )}
+
+        {videos.map((item, i) => {
+  const partner = item?.foodPartner;
+  return (
+    <section className="video-page snap" key={item._id || i} data-index={i}>
+      <div className="video-wrapper">
+        <video
+          ref={(el) => (videoRefs.current[i] = el)}
+          src={item.video}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="video"
+        />
+
+        {partner && (
+          <div className="video-left-info">
+            <div className="restaurant-profile">
+              <div className="restaurant-avatar">
+                {partner.restaurantName?.[0]?.toUpperCase() || 'R'}
+              </div>
+              <div className="restaurant-details">
+                <h3 className="restaurant-name">{partner.restaurantName || 'Restaurant'}</h3>
+                <p className="restaurant-location">{partner.address || 'Location'}</p>
               </div>
             </div>
+            <p className="video-description">{truncateDescription(item.description)}</p>
           </div>
-        ))}
+        )}
+
+        <div className="video-actions">
+          <Link to={`/food-partner/${partner ?? ''}`} className="action-btn visit-store-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+            <span>Visit</span>
+          </Link>
+        </div>
+
+        {i === 0 && videos.length > 1 && <div className="scroll-indicator">↓</div>}
+
+        {/* 🔽 NEW: desktop-only edge buttons, appended to the right side of the video */}
+        <div className="desktop-edge-nav" role="presentation">
+          <button className="edge-btn up" onClick={goPrev} aria-label="Previous video">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 15l6-6 6 6" />
+            </svg>
+          </button>
+          <button className="edge-btn down" onClick={goNext} aria-label="Next video">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 9l-6 6-6-6" />
+            </svg>
+          </button>
+        </div>
+        {/* 🔼 NEW */}
+      </div>
+    </section>
+  );
+})}
+
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
