@@ -7,3 +7,4 @@
 
 / => Home short videos
 
+/food-partner/:id  => food partner profile
