@@ -26,7 +26,4 @@ router.get("/",
     foodController.getFoodItems
 );
 
-
-
-
 module.exports = router;
