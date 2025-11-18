@@ -29,7 +29,8 @@ const CreateFood = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const foodName = e.target.foodName.value;
+    const name = e.target.name.value;
+    const description = e.target.description.value;
 
     if (!videoFile) {
       alert('Please select a video first');
@@ -37,11 +38,12 @@ const CreateFood = () => {
     }
 
     const formData = new FormData();
-    formData.append('foodName', foodName);
-    formData.append('foodVideo', videoFile);
+    formData.append('name', name);
+    formData.append('video', videoFile);
+    formData.append('description', description);
 
     const response = await axios.post(
-      'http://localhost:3000/api/food/create',
+      'http://localhost:3000/api/food',
       formData,
       {
         withCredentials: true,
@@ -68,11 +70,11 @@ const CreateFood = () => {
 
         <form method="post" onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="form-group">
-            <label htmlFor="foodName" className="form-label">Food Name</label>
+            <label htmlFor="name" className="form-label">Food Name</label>
             <input
               type="text"
-              id="foodName"
-              name="foodName"
+              id="name"
+              name="name"
               className="form-input"
               placeholder="Enter food name"
               required
@@ -80,12 +82,12 @@ const CreateFood = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="foodVideo" className="form-label">Food Video (.mp4)</label>
+            <label htmlFor="video" className="form-label">Food Video (.mp4)</label>
             <div className="file-input-wrapper">
               <input
                 type="file"
-                id="foodVideo"
-                name="foodVideo"
+                id="video"
+                name="video"
                 accept="video/mp4"
                 className="form-input file-input"
                 onChange={handleVideoChange}
@@ -104,6 +106,17 @@ const CreateFood = () => {
               />
             </div>
           )}
+
+          <div className="form-group">
+            <label htmlFor="description" className="form-label">Food Description</label>
+            <input
+              type="text"
+              id="description"
+              name="description"
+              className="form-input"
+              placeholder="Enter food description"
+            />
+          </div>
 
           <button type="submit" className="auth-button">
             Create Food
