@@ -1,5 +1,6 @@
 const FoodModel = require("../models/food.model");
 const LikeModel = require("../models/likes.model");
+const SaveModel = require("../models/save.model");
 
 const storageService = require("../services/storage.service");
 const { v4: uuid } = require("uuid");
@@ -59,6 +60,11 @@ async function likeFoodItems(req, res) {
             user: user._id,
             food: foodId
         });
+
+        await FoodModel.findByIdAndUpdate(foodId, {
+            $inc: { likeCount: -1 }
+        });
+
         return res.status(200).json({
             message: "Food unliked successfully"
         });
@@ -70,11 +76,16 @@ async function likeFoodItems(req, res) {
         food: foodId
     });
 
+    await FoodModel.findByIdAndUpdate(foodId, {
+        $inc: { likeCount: 1 }
+    });
+
     res.status(200).json({
         message: "Like added successfully",
         like
     });
 }
+
 
 module.exports = {
     createFoodItem,
