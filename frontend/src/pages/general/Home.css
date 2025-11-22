@@ -250,3 +250,65 @@
 .visit-store-btn svg {
   color: white !important;
 }
+
+/* Buttons Right Side */
+.video-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 20px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* Stack Like + Bookmark vertically */
+.action-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Circular icon buttons */
+.action-btn.circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(38,38,38,0.65);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  transition: 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.action-btn.circle .icon {
+  width: 23px;
+  height: 23px;
+}
+
+/* Hover effect */
+.action-btn.circle:hover {
+  transform: scale(1.07);
+  background: rgba(55,55,55,0.75);
+}
+
+/* VISIT button stays rectangle */
+.visit-store-btn {
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(255, 60, 60, 0.4);
+}
+
+.visit-store-btn span,
+.visit-store-btn svg {
+  color: #fff !important;
+}

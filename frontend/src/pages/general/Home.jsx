@@ -108,6 +108,25 @@ const Home = () => {
         )}
 
         <div className="video-actions">
+
+          <div className="action-stack">
+            {/* LIKE BUTTON */}
+            <button className="action-btn circle like-circle">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="icon">
+                <path fill="none" stroke="white" strokeWidth="1.8" 
+                  d="M12.001 4.52853C14.35 2.42 17.98 2.49 20.2426 4.75736C22.5053 7.02472 22.583 10.637 20.4786 12.993L11.9999 21.485L3.52138 12.993C1.41705 10.637 1.49571 7.01901 3.75736 4.75736C6.02157 2.49315 9.64519 2.41687 12.001 4.52853Z"/>
+              </svg>
+            </button>
+
+            {/* BOOKMARK BUTTON */}
+            <button className="action-btn circle bookmark-circle">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="icon">
+                <path fill="none" stroke="white" strokeWidth="1.8" d="M6 2h12v20l-6-3-6 3V2z"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* VISIT BUTTON (keep your current one if you want) */}
           <Link to={`/food-partner/${partner ?? ''}`} className="action-btn visit-store-btn">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -116,7 +135,10 @@ const Home = () => {
             </svg>
             <span>Visit</span>
           </Link>
+
         </div>
+
+
 
         {i === 0 && videos.length > 1 && <div className="scroll-indicator">↓</div>}
 
