@@ -42,17 +42,39 @@ async function authUserMiddleware(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("decoded: ", decoded);
 
-        const user = await UserModel.findById(decoded._id);
+        // Try normal User
+        let user = await UserModel.findById(decoded.id);
 
-        req.user = user;
+        if (user) {
+            console.log("Logged in as user.");
+            req.user = user;
+            req.userType = 'user';
+            next(); // RETURN so we only call next() once
+        }
 
-        next();
+        // try Food Partner
+        const foodPartner = await FoodPartnerModel.findById(decoded.id);
+        console.log("foodPartner: ", foodPartner);
+
+        if (foodPartner) {
+            console.log("Logged in as food partner.");
+            req.user = foodPartner;
+            next();
+        }
+        
+        // Neither found
+        return res.status(401).json({ 
+            message: "Invalid token: user not found",
+            token,
+            decoded
+        });
     }
     catch(err) {
         res.status(401).json({
-            message: "Invalid token",
-            err
+            message: "Invalid or expired token",
+            err,
         });
     }
 }
@@ -60,5 +82,4 @@ async function authUserMiddleware(req, res, next) {
 module.exports = {
     authFoodPartnerMiddleware,
     authUserMiddleware,
-    
 }
