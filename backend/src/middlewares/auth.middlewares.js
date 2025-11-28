@@ -51,7 +51,7 @@ async function authUserMiddleware(req, res, next) {
             console.log("Logged in as user.");
             req.user = user;
             req.userType = 'user';
-            next(); // RETURN so we only call next() once
+            return next(); // RETURN so we only call next() once
         }
 
         // try Food Partner
@@ -61,7 +61,7 @@ async function authUserMiddleware(req, res, next) {
         if (foodPartner) {
             console.log("Logged in as food partner.");
             req.user = foodPartner;
-            next();
+            return next();
         }
         
         // Neither found

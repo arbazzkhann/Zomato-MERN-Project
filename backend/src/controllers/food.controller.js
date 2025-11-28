@@ -35,8 +35,9 @@ async function createFoodItem(req, res) {
 }
 
 async function getFoodItems(req, res) {
+    
     const foodItems = await FoodModel.find({
-
+        
     });
 
     res.status(200).json({
@@ -48,12 +49,15 @@ async function getFoodItems(req, res) {
 async function likeFoodItems(req, res) {
     const { foodId } = req.body;
     const user = req.user;
+    console.log("user: ", user)
 
     //If already liked
     const isAlreadyLiked = await LikeModel.findOne({
         user: user._id,
         food: foodId
     });
+
+    console.log(isAlreadyLiked)
 
     if(isAlreadyLiked) {
         await LikeModel.deleteOne({
