@@ -1,6 +1,6 @@
 const FoodModel = require("../models/food.model");
 const LikeModel = require("../models/likes.model");
-const SaveModel = require("../models/save.model");
+const BookmarkModel = require("../models/bookmark.model");
 
 const storageService = require("../services/storage.service");
 const { v4: uuid } = require("uuid");
@@ -49,15 +49,12 @@ async function getFoodItems(req, res) {
 async function likeFoodItems(req, res) {
     const { foodId } = req.body;
     const user = req.user;
-    console.log("user: ", user)
 
     //If already liked
     const isAlreadyLiked = await LikeModel.findOne({
         user: user._id,
         food: foodId
     });
-
-    console.log(isAlreadyLiked)
 
     if(isAlreadyLiked) {
         await LikeModel.deleteOne({
@@ -90,30 +87,48 @@ async function likeFoodItems(req, res) {
     });
 }
 
-async function saveFood(req, res) {
+async function bookmarkFoodItems(req, res) {
     const { foodId } = req.body;
     const user = req.user;
 
-    const isAlreadySaved = await SaveModel.findOne({
+    const isAlreadySaved = await BookmarkModel.findOne({
         user: user._id,
         food: foodId
     });
 
     if(isAlreadySaved) {
-        await SaveModel.deleteOne({
+        await BookmarkModel.deleteOne({
             user: user._id,
             food: foodId
         });
 
+        await FoodModel.findByIdAndUpdate(foodId, {
+            $inc: { bookmarkCount: -1 }
+        });
+
         return res.status(200).json({
-            message: "Food unsaved successfully"
+            message: "Food removed from bookmark successfully"
         });
     }
+
+    const bookmark = await BookmarkModel.create({
+        user: user._id,
+        food: foodId
+    });
+
+    await FoodModel.findByIdAndUpdate(foodId, {
+        $inc: { bookmarkCount: 1 }
+    });
+
+    res.status(201).json({
+        message: "Food bookmarked successfully",
+        bookmark
+    });
 }
 
 module.exports = {
     createFoodItem,
     getFoodItems,
     likeFoodItems,
-    saveFood,
+    bookmarkFoodItems,
 }
