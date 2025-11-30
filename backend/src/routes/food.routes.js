@@ -31,9 +31,9 @@ router.post('/like',
     foodController.likeFoodItems
 );
 
-router.post("/save", 
+router.post("/bookmark", 
     authMiddleware.authUserMiddleware,
-    foodController.saveFood
+    foodController.bookmarkFoodItems
 );
 
 module.exports = router;
