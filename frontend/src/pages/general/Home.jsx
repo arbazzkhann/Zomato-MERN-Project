@@ -76,11 +76,30 @@ const Home = () => {
 
     if(response.data.like) {
       console.log("Video liked");
-      setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, likesCount: v.likeCount + 1 } : v));
+      setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, likeCount: v.likeCount + 1 } : v));
     }
     else {
       console.log("Video disliked");
-      setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, likesCount: v.likeCount - 1 } : v));
+      setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, likeCount: v.likeCount - 1 } : v));
+    }
+  }
+
+  async function bookmarkVideo(item) {
+    const response = await axios.post(
+      "http://localhost:3000/api/food/bookmark", 
+      {foodId: item._id}, 
+      {withCredentials: true}
+    );
+
+    console.log("response: ", response)
+
+    if(response.data.bookmark) {
+      console.log("Video bookmarked");
+      setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, bookmarkCount: v.bookmarkCount + 1 } : v));
+    }
+    else {
+      console.log("Video removed from bookmarked!");
+      setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, bookmarkCount: v.bookmarkCount - 1 } : v));
     }
   }
 
@@ -135,17 +154,17 @@ const Home = () => {
                     <path fill="none" stroke="white" strokeWidth="1.8" 
                       d="M12.001 4.52853C14.35 2.42 17.98 2.49 20.2426 4.75736C22.5053 7.02472 22.583 10.637 20.4786 12.993L11.9999 21.485L3.52138 12.993C1.41705 10.637 1.49571 7.01901 3.75736 4.75736C6.02157 2.49315 9.64519 2.41687 12.001 4.52853Z"/>
                   </svg>
-                <span>{item.likeCount === 0 ? "Like" : item.likes}</span>
+                <span>{item.likeCount === 0 ? "Like" : item.likeCount}</span>
                 </button>
               </div>
 
               {/* BOOKMARK BUTTON */}
               <div>
-                <button className="action-btn ">
+                <button onClick={() => bookmarkVideo(item)} className="action-btn ">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="icon">
                     <path fill="none" stroke="white" strokeWidth="1.8" d="M6 2h12v20l-6-3-6 3V2z"/>
                   </svg>
-                  <span>Save</span>
+                  <span>{item.bookmarkCount === 0 ? "Save" : item.bookmarkCount}</span>
                 </button>
               </div>
             </div>
